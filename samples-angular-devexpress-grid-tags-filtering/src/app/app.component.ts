@@ -58,6 +58,16 @@ export class AppComponent {
         return '';
       }
     },
+    {
+      dataField: 'TagIds',
+      name: 'TagIds2',
+      caption: 'Tag Ids 2',
+      allowFiltering: true,
+      allowSorting: false,
+      cellTemplate: 'tagsCellTemplate',
+      filterOperations: ['contains'],
+      selectedFilterOperation: 'contains'
+    },
   ];
 
   gridDataSource: DataSource = new DataSource({
@@ -70,6 +80,7 @@ export class AppComponent {
       beforeSend: (options): void => {
         if (options.params['$filter']) {
           options.params['$filter'] = this.replaceTagsFilter(options.params['$filter']);
+          options.params['$filter'] = this.replaceTags2Filter(options.params['$filter']);
         }
         options.headers['api-key'] = 'pe0WoRUtzjVDq3bm9jDum0nGj1k8BzL2BGUkaftYPVAzSeDnIqji';
         options.params['api-version'] = '2019-05-06';
@@ -105,5 +116,22 @@ export class AppComponent {
   private replaceTagsFilter(filterParam: string): string {
     const rx = /(TagIds\/any\(t: t eq \d+\)) eq true/g;
     return filterParam.replace(rx, '$1');
+  }
+
+  /*
+  * Replaces contains(TagIds,[1,2,3]) with (TagIds/any(t: t eq 1) and TagIds/any(t: t eq 2) and TagIds/any(t: t eq 3)).
+  */
+  private replaceTags2Filter(input: string): string | undefined {
+    const output = input.replace(
+      /contains\(TagIds,\[([\d,]*)\]\)/g,
+      (_: string, tagIdsString: string) => {
+        if (tagIdsString === '') {
+          return '';
+        }
+        const tagIds = tagIdsString.split(',').map((tagId: string) => `TagIds/any(t: t eq ${tagId})`);
+        return `(${tagIds.join(' and ')})`;
+      });
+
+    return !!output ? output : undefined;
   }
 }
