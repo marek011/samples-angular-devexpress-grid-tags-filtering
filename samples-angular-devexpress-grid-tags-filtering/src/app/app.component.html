@@ -1,0 +1,31 @@
+<dx-data-grid
+  [columns]="columns"
+  [dataSource]="gridDataSource"
+  [filterRow]="{ visible: true }"
+  [filterPanel]="{ visible: true }"
+  (onEditorPreparing)="onEditorPreparing($event)">
+  <ng-template #tagsFilterRowEditor let-options="options">
+    <dx-tag-box
+      [dataSource]="tagsDataSource"
+      [value]="options.value"
+      valueExpr="Id"
+      displayExpr="Name"
+      [inputAttr]="{ 'aria-label': 'Name' }"
+      (onValueChanged)="options.setValue($event.value)"
+      (onSelectionChanged)="options.component.updateDimensions()">
+    </dx-tag-box>
+  </ng-template>
+
+  <div *dxTemplate="let cellInfo of 'tagsCellTemplate'">
+    <dx-tag-box
+      [dataSource]="tagsDataSource"
+      [value]="cellInfo.value"
+      valueExpr="Id"
+      displayExpr="Name"
+      [disabled]="true"
+      [inputAttr]="{ 'aria-label': 'Name' }"
+      (onValueChanged)="cellInfo.setValue($event.value)"
+      (onSelectionChanged)="cellInfo.component.updateDimensions()">
+    </dx-tag-box>
+  </div>
+</dx-data-grid>
