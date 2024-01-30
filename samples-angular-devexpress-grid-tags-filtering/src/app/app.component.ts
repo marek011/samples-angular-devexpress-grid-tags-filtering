@@ -19,6 +19,22 @@ export class AppComponent {
   private viewContainerRef = inject(ViewContainerRef);
   @ViewChild('tagsFilterRowEditor') private tagsFilterRowEditor: any;
 
+  customFilterOperations = [
+    {
+      name: 'containsalltags',
+      caption: 'Contains tags',
+      hasValue: true,
+      icon: 'check',
+      editorTemplate: 'tagBoxTemplate',
+      calculateFilterExpression: (filterValue: any, field: any) => {
+        if (Array.isArray(filterValue) && filterValue.length > 0) {
+          return ['TagIds', 'contains', filterValue];
+        }
+        return '';
+      }
+    }
+  ];
+
   title = 'samples-angular-devexpress-grid-tags-filtering';
   tagsDataSource = new ArrayStore({
     data: [
@@ -65,8 +81,18 @@ export class AppComponent {
       allowFiltering: true,
       allowSorting: false,
       cellTemplate: 'tagsCellTemplate',
-      filterOperations: ['contains'],
-      selectedFilterOperation: 'contains'
+      filterOperations: ['contains', 'containsalltags'],
+      selectedFilterOperation: 'containsalltags',
+      calculateFilterExpression: function calculateTagsFilterExpression(
+        this: Column,
+        filterValue: any,
+        selectedFilterOperation: string | null,
+        target: string) : string | Function | any[] {
+        if (Array.isArray(filterValue) && filterValue.length > 0 && (target === 'filterRow' || target === 'filterBuilder')) {
+          return [this.dataField, 'contains', filterValue];
+        }
+        return [];
+      }
     },
   ];
 

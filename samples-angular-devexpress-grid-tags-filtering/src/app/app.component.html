@@ -28,4 +28,18 @@
       (onSelectionChanged)="cellInfo.component.updateDimensions()">
     </dx-tag-box>
   </div>
+
+  <dxo-filter-builder [customOperations]="customFilterOperations">
+    <dx-tag-box
+      *dxTemplate="let options of 'tagBoxTemplate'"
+      class="dx-tag-box-filter"
+      valueExpr="Id"
+      displayExpr="Name"
+      [value]="options.value"
+      [dataSource]="tagsDataSource"
+      [inputAttr]="{ 'aria-label': 'Category' }"
+      (onValueChanged)="options.setValue($event.value)"
+      width="auto">
+    </dx-tag-box>
+  </dxo-filter-builder>
 </dx-data-grid>
